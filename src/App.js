@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, addDoc, runTransaction, setLogLevel } from 'firebase/firestore';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { Copy, Link, Check, XCircle, Loader2, Eye, ShieldOff } from 'lucide-react';
+import { Copy, Link, Check, XCircle, Loader2, ShieldOff } from 'lucide-react';
 
 // --- Firebase Configuration (Production Ready) ---
 // Reads configuration from environment variables.
@@ -33,10 +33,8 @@ const appId = process.env.REACT_APP_PROJECT_ID || 'local-dev-app';
 export default function App() {
     // --- State Management ---
     const [isAuthReady, setIsAuthReady] = useState(false);
-    // **CHANGED**: Added 'viewing' page state
     const [page, setPage] = useState('create'); // 'create', 'viewing', 'invalid'
     const [targetUrl, setTargetUrl] = useState('');
-    // **NEW**: State to hold the URL for the iframe
     const [urlToDisplay, setUrlToDisplay] = useState('');
     const [generatedLink, setGeneratedLink] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +63,7 @@ export default function App() {
         return () => unsubscribe();
     }, []);
 
-    // --- **CHANGED**: Logic to load content into iframe instead of redirecting ---
+    // --- Logic to load content into iframe ---
     const loadAndDisplayContent = useCallback(async (linkId) => {
         const linkDocRef = doc(db, `artifacts/${appId}/public/data/onetime_links`, linkId);
         try {
@@ -75,11 +73,10 @@ export default function App() {
                     throw new Error("Link does not exist or has already been used.");
                 }
                 const data = linkDoc.data();
-                transaction.delete(linkDocRef); // The link is destroyed here
+                transaction.delete(linkDocRef);
                 return data.targetUrl;
             });
             
-            // **NEW**: Set the URL for the iframe and change the page
             setUrlToDisplay(fetchedUrl);
             setPage('viewing');
 
@@ -170,22 +167,14 @@ export default function App() {
         );
     }
 
-    // **NEW**: Viewing page with the iframe
+    // **CHANGED**: Viewing page is now fully immersive
     if (page === 'viewing') {
         return (
-            <div className="w-full h-screen flex flex-col">
-                <div className="flex-shrink-0 bg-gray-100 p-2 border-b flex items-center justify-between">
-                    <div className="flex items-center">
-                        <Eye className="w-5 h-5 text-gray-600 mr-2" />
-                        <span className="text-sm text-gray-700">您正在通过一次性链接安全查看内容</span>
-                    </div>
-                    <a href="/" className="text-xs text-blue-600 hover:underline">创建新链接</a>
-                </div>
+            <div className="w-screen h-screen overflow-hidden">
                 <iframe 
                     src={urlToDisplay} 
                     title="一次性查看内容"
-                    className="w-full flex-grow border-0"
-                    // Some sites might still break, this sandbox attribute can sometimes help, but is not a silver bullet.
+                    className="w-full h-full border-0"
                     sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation"
                 ></iframe>
             </div>
@@ -199,9 +188,7 @@ export default function App() {
                     <ShieldOff className="h-16 w-16 text-red-500 mx-auto" />
                     <h1 className="text-3xl font-bold text-slate-800 mt-4">链接已失效</h1>
                     <p className="text-slate-600 mt-2">此链接已被使用或不存在。一次性链接只能被访问一次。</p>
-                    <a href="/" className="mt-6 inline-block w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">
-                        创建新的链接
-                    </a>
+                    {/* **CHANGED**: Removed the link to the creation page */}
                 </div>
             </div>
         );
