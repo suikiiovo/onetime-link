@@ -167,10 +167,10 @@ export default function App() {
         );
     }
 
-    // **CHANGED**: Viewing page is now fully immersive
+    // **CHANGED**: Used a more robust fixed positioning for guaranteed fullscreen.
     if (page === 'viewing') {
         return (
-            <div className="w-screen h-screen overflow-hidden">
+            <div className="fixed inset-0 w-full h-full">
                 <iframe 
                     src={urlToDisplay} 
                     title="一次性查看内容"
@@ -188,7 +188,6 @@ export default function App() {
                     <ShieldOff className="h-16 w-16 text-red-500 mx-auto" />
                     <h1 className="text-3xl font-bold text-slate-800 mt-4">链接已失效</h1>
                     <p className="text-slate-600 mt-2">此链接已被使用或不存在。一次性链接只能被访问一次。</p>
-                    {/* **CHANGED**: Removed the link to the creation page */}
                 </div>
             </div>
         );
