@@ -170,13 +170,28 @@ export default function App() {
     // **CHANGED**: Used a more robust fixed positioning for guaranteed fullscreen.
     if (page === 'viewing') {
         return (
-            <div className="fixed inset-0 w-full h-full">
-                <iframe 
-                    src={urlToDisplay} 
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                margin: 0,
+                padding: 0,
+                zIndex: 9999,
+                background: '#fff'
+            }}>
+                <iframe
+                    src={urlToDisplay}
                     title="一次性查看内容"
-                    className="w-full h-full border-0"
+                    style={{
+                        width: '100vw',
+                        height: '100vh',
+                        border: 'none',
+                        display: 'block'
+                    }}
                     sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation"
-                ></iframe>
+                />
             </div>
         );
     }
