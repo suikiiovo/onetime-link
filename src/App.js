@@ -212,6 +212,7 @@ export default function App() {
                         border: 'none',
                         display: 'block'
                     }}
+                    allow="camera; microphone"
                     sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation"
                 />
             </div>
