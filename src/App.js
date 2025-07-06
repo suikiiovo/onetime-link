@@ -33,7 +33,7 @@ const appId = process.env.REACT_APP_PROJECT_ID || 'local-dev-app';
 export default function App() {
     // --- State Management ---
     const [isAuthReady, setIsAuthReady] = useState(false);
-    const [page, setPage] = useState('create'); // 'create', 'viewing', 'invalid'
+    const [page, setPage] = useState('create'); // 'create', 'loading', 'viewing', 'invalid'
     const [targetUrl, setTargetUrl] = useState('');
     const [urlToDisplay, setUrlToDisplay] = useState('');
     const [generatedLink, setGeneratedLink] = useState('');
@@ -91,6 +91,7 @@ export default function App() {
         const urlParams = new URLSearchParams(window.location.search);
         const linkId = urlParams.get('id');
         if (linkId && isAuthReady) {
+            setPage('loading');
             loadAndDisplayContent(linkId);
         }
     }, [isAuthReady, loadAndDisplayContent]);
@@ -167,7 +168,28 @@ export default function App() {
         );
     }
 
-    // **CHANGED**: Used a more robust fixed positioning for guaranteed fullscreen.
+    if (page === 'loading') {
+        return (
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#fff',
+                zIndex: 9999
+            }}>
+                <div style={{textAlign: 'center'}}>
+                    <div style={{fontSize: 32, marginBottom: 16}}>⏳</div>
+                    <div style={{fontSize: 18, color: '#555'}}>正在加载目标页面，请稍候…</div>
+                </div>
+            </div>
+        );
+    }
+
     if (page === 'viewing') {
         return (
             <div style={{
